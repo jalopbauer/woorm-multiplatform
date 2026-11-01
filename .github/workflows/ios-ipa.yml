@@ -1,0 +1,57 @@
+name: iOS unsigned .ipa
+
+# Build the iOS app on macOS and publish an unsigned .ipa as a workflow
+# artifact (plan §6: Linux-first dev needs rented Apple time / TestMu AI).
+# Manual trigger only: the repo is public (macOS minutes are free) but rebuilds
+# per commit are wasteful — run this on each iOS milestone.
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Set up Gradle (caching)
+        uses: gradle/actions/setup-gradle@v4
+
+      # Wizard project ships a "gradlew" run-script phase
+      # (:composeApp:embedAndSignAppleFrameworkForXcode), so a plain Xcode
+      # archive also builds the shared Kotlin framework for the device target.
+      # Signing is disabled end-to-end: the .ipa stays unsigned and gets
+      # re-signed by the device-cloud vendor (TestMu AI / MacinCloud).
+      - name: Archive iOS app (unsigned)
+        run: |
+          xcodebuild \
+            -project iosApp/iosApp.xcodeproj \
+            -scheme iosApp \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath build/woorm.xcarchive \
+            archive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+
+      - name: Package unsigned .ipa
+        run: |
+          APP=$(find build/woorm.xcarchive/Products/Applications -maxdepth 1 -name '*.app')
+          echo "App bundle: $APP"
+          mkdir -p build/Payload
+          cp -R "$APP" build/Payload/
+          (cd build && zip -qr woorm-unsigned.ipa Payload)
+          ls -l build/woorm-unsigned.ipa
+
+      - name: Upload .ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: woorm-unsigned-ipa
+          path: build/woorm-unsigned.ipa
+          if-no-files-found: error
