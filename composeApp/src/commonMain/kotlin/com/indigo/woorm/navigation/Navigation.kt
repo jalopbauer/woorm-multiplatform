@@ -69,6 +69,10 @@ fun Navigation(
             deepLinks = listOf(
                 navDeepLink<Route.BookClub.Invite>(
                     basePath = "https://woorm.com/book-clubs/invite"
+                ),
+                // iOS registered scheme (iosApp Info.plist); same invite path.
+                navDeepLink<Route.BookClub.Invite>(
+                    basePath = "woorm://book-clubs/invite"
                 )
             )
         ) {
