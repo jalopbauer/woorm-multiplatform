@@ -3,6 +3,12 @@
 agp = "9.2.0"
 kotlin = "2.3.21"
 kotlinx-serialization = "1.11.0"
+# java.time replacement. MUST stay on 0.7.1: JB material3 1.9.0's iOS variants
+# require kotlinx-datetime 0.7.1, so Gradle resolves 0.7.1 on iOS regardless of
+# what we pin (0.6.x is silently overridden there). Import kotlin.time.Clock
+# directly in code — 0.7.x's deprecated kotlinx.datetime.Clock typealias breaks
+# Clock.System member resolution on iOS klibs.
+kotlinx-datetime = "0.7.1"
 ktor = "3.4.3"
 koin = "4.2.1"
 coil = "3.4.0"
@@ -32,6 +38,7 @@ datastore = "1.2.1"
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 androidx-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
@@ -42,6 +49,8 @@ coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" 
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
 koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-compose-viewmodel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }

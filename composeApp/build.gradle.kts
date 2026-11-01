@@ -55,6 +55,8 @@ kotlin {
             implementation(libs.coil.network.ktor3)
 
             implementation(libs.androidx.datastore)
+            implementation(libs.androidx.datastore.preferences)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.serialization.json)
 
             implementation(libs.ktor.client.core)
